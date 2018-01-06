@@ -22,19 +22,20 @@
                         <div class="row">
                             <form id="task-form">
                                     <div class="input-field col s12">
-                                            <input type="text" name="task" id="task">
-                                            <label for="task">What day will you be boarding?</label>                                            
-                                        </div>
-                                <div class="input-field col s12">
-                                    <input type="text" name="task" id="task">
-                                    <label for="task">How Long Will You Be Playing: Start Time-End Time</label>
+                                        Select Date:
+                                    <input id="dayInput" type="date" placeholder="What day will you be boarding">
                                 </div>
                                 <div class="input-field col s12">
-                                        <input type="text" name="task" id="task">
+                                        How Long Will You Be Playing: Start Time-End Time
+                                   <br>Start: <input type="time" name="task" id="startTime"> End:  <input type="time" name="task" id="endTime">
+
+                                </div>
+                                <div class="input-field col s12">
+                                        <input type="number" name="task" id="task">
                                         <label for="task">How many games at a time</label>
                                     </div>
                                 <div class="input-field col s12">
-                                    <input type="text" name="task" id="task">
+                                    <input type="number" name="task" id="task">
                                     <label for="task">Number of Players</label>
                                 </div>
                                 <div class="input-field col s12">
@@ -45,7 +46,6 @@
                             </form>
                         </div>
                     </div>
-                    <div>Test</div>
                     <!-- <div class="card-action">
                         <h5 id="task-title">Tasks</h5>
                         <div class="input-field col s12">

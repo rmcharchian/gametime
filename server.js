@@ -4,7 +4,7 @@ var bodyParser = require('body-parser');
 var port = process.env.PORT || 6117;
 
 //include routes
-var eventsRouter = equire('./routes/events.router');
+var eventsRouter = require('./routes/events.router');
 
 // Body parser middleware
 app.use(bodyParser.json());

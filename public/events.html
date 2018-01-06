@@ -1,0 +1,9 @@
+<div class="container">
+        <h2>Upcoming Events:</h2>
+        <hr>
+        <div ng-repeat="event in ec.events | orderBy: 'start_date'">
+          <h3>{{event.event_name}}</h3>
+          <h3>{{event.date | date: format: fullDate}}</h4>
+        </div>
+        <hr>
+    </div>

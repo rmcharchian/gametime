@@ -2,6 +2,17 @@
     display: block;
   }
 
+.welcome {
+    background-color: #585858;
+    background-image: url("https://unsplash.com/photos/SRpJojtisUE");
+    background-size: cover;
+    min-height: 300px;
+    opacity: 1;
+    padding: 0;
+    height: calc(100vh - 75px);
+}
+
+
 /* select {
     display: inline !important;
 } */

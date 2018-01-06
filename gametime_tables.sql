@@ -11,7 +11,7 @@ email varchar
 CREATE TABLE game_time.events (
 id serial PRIMARY KEY,
 event_name varchar,
-created_date date,
+event_date date,
 start_time numeric,
 end_time numeric
 );

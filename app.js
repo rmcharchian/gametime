@@ -1,3 +1,8 @@
+$(document).ready(function() {
+    $('select').material_select();
+});
+
+
 //Define UI vars
 const form = document.querySelector('#task-form');
 const taskList = document.querySelector('.collection');

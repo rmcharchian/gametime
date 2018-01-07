@@ -1,17 +1,22 @@
 var games = [
     { "id": 1, "name": "Catan", "duration": 60, "maxPlayers": 6, "minPlayers": 3 },
     { "id": 2, "name": "Monopoly", "duration": 120, "maxPlayers": 6, "minPlayers": 2 },
-    { "id": 3, "name": "Coup", "duration": 30, "maxPlayers": 5, "minPlayers": 2 },
-    { "id": 4, "name": "Pandemic", "duration": 90, "maxPlayers": 6, "minPlayers": 3 },
+    { "id": 3, "name": "Pandemic", "duration": 90, "maxPlayers": 6, "minPlayers": 3 },
+    { "id": 4, "name": "Coup", "duration": 30, "maxPlayers": 5, "minPlayers": 2 },
 ];            
 
 var numPlayers = 15;
 var numRooms = 2;
 var startTime = new Date("1/7/2018 8:00").getTime();
 var endTime = new Date("1/7/2018 22:00").getTime();
+
 var rooms = [];
-var schedule = [];
+var schedule = new Array();
+
 var players = [];
+for (var i=0; i<numPlayers; i++) {
+    players[i] = { "name": "Player " + (i + 1), "busyUntil": startTime, "used": false };
+}
 
 // Assign each game to a room for the duration of this event
 var currentRoom = 0;
@@ -30,13 +35,12 @@ games.forEach(game => {
 for (var i=0; i<numRooms; i++) {
     var nextGameStartTime = startTime;
     var timeRemaining = endTime - nextGameStartTime;
-    schedule[i] = [];
     finished = false;
     while(!finished) {
         rooms[i]["games"].forEach(game => {
             var gameDurationMilliSeconds = game.duration * 60 * 1000;
             if (gameDurationMilliSeconds <= timeRemaining) {
-                schedule.push({"startTime": nextGameStartTime, "game": game, "players": []});
+                schedule.push({"startTime": nextGameStartTime, "game": game, "players": [], room: i});
                 nextGameStartTime = nextGameStartTime + gameDurationMilliSeconds;
                 timeRemaining = endTime - nextGameStartTime;
             } else {
@@ -48,37 +52,33 @@ for (var i=0; i<numRooms; i++) {
 
 }
 
-// Assign players to each schedule slot
-for (var i=0; i<numPlayers; i++) {
-    players[i] = { "name": "Player " + (i + 1), "busyUntil": startTime, "used": false };
-}
+schedule.sort(function(a,b) {
+    return a.startTime - b.startTime;
+});
 
-for (var currentRoomNum=0; currentRoomNum<numRooms; currentRoomNum++) {
-    //TO DO: Find a way to alternate between the two rooms, so room 1 doesn't sew up all the players
-    schedule[currentRoomNum].forEach(slot => {
-        attempts = 0; // limit attempts so we don't get into an infinite loop!
-        lastPlayer = -1;
-        while (slot["players"].length < slot["game"].maxPlayers && attempts < 4) {
-            foundPlayer = false;
-            for (var i=lastPlayer+1; i<players.length; i++) {
-                if (!players[i].used && (slot["startTime"] >= players[i].busyUntil)) {
-                    slot["players"].push(players[i].name);
-                    players[i].busyUntil = slot["startTime"] + slot["game"].duration * 60 * 1000;
-                    players[i].used = true;
-                    foundPlayer = true;
-                    lastPlayer = i;
-                    break;
-                }
-            }
-            if (!foundPlayer) {
-//                alert("Resetting with start time " + JSON.stringify(slot) + "\n" + JSON.stringify(players));
-                resetUsedFlags(players);
-                attempts++;
-                lastPlayer = -1;
+// Assign players to each schedule slot
+schedule.forEach(slot => {
+    attempts = 0; // limit attempts so we don't get into an infinite loop!
+    lastPlayer = -1;
+    while (slot["players"].length < slot["game"].maxPlayers && attempts < 4) {
+        foundPlayer = false;
+        for (var i=lastPlayer+1; i<players.length; i++) {
+            if (!players[i].used && (slot["startTime"] >= players[i].busyUntil)) {
+                slot["players"].push(players[i].name);
+                players[i].busyUntil = slot["startTime"] + slot["game"].duration * 60 * 1000;
+                players[i].used = true;
+                foundPlayer = true;
+                lastPlayer = i;
+                break;
             }
         }
-    });
-}        
+        if (!foundPlayer) {
+            resetUsedFlags(players);
+            attempts++;
+            lastPlayer = -1;
+        }
+    }
+});
 
 function resetUsedFlags(players) {
     players.forEach(player => {
@@ -88,19 +88,22 @@ function resetUsedFlags(players) {
 
 $(document).ready(function() {
     var results = "";
+    var rooms = [];
     for (var i=0; i<numRooms; i++) {
-        results += "<h2>Room " + (i+1) + "</h2>";
-        results += "<table><tr><th>Start Time</th><th>Game</th><th>Players</th></tr>";
-        schedule[i].forEach(slot => {
-            results += "<tr><td>" 
-                    + new Date(slot["startTime"]).toLocaleTimeString() 
-                    + "</td><td>" 
-                    + slot["game"].name 
-                    + "</td><td>" 
-                    + JSON.stringify(slot["players"]) 
-                    + "</td></tr>";
+        rooms[i] = "<h2>Room " + (i+1) + "</h2>";
+        rooms[i] += "<table><tr><th>Start Time</th><th>Game</th><th>Players</th></tr>";
+        schedule.forEach(slot => {
+            if (slot["room"] == i) {
+                rooms[i] += "<tr><td>" 
+                        + new Date(slot["startTime"]).toLocaleTimeString() 
+                        + "</td><td>" 
+                        + slot["game"].name 
+                        + "</td><td>" 
+                        + slot["players"].join(", ") 
+                        + "</td></tr>";
+            }
         })
-        results += "</table>";
+        rooms[i] += "</table>";
     }
-    $("#results").html(results);
+    $("#results").html(rooms.join(""));
 });
